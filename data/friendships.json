@@ -1,0 +1,50 @@
+[
+  {
+    "id": "f_1785558029375_79510p",
+    "userAId": "u_1785557679666_57jzi8",
+    "userBId": "u_1785557969499_n3me7b",
+    "status": "accepted",
+    "requestedBy": "u_1785557679666_57jzi8",
+    "createdAt": "2026-08-01T04:20:29.375Z"
+  },
+  {
+    "id": "f_1785575512948_ccwm4h",
+    "userAId": "u_1785557679666_57jzi8",
+    "userBId": "u_1785575393620_ak7b0s",
+    "status": "accepted",
+    "requestedBy": "u_1785557679666_57jzi8",
+    "createdAt": "2026-08-01T09:11:52.948Z"
+  },
+  {
+    "id": "f_1785579051321_3ofzad",
+    "userAId": "u_1785579042632_bs89rr",
+    "userBId": "u_1785557679666_57jzi8",
+    "status": "accepted",
+    "requestedBy": "u_1785579042632_bs89rr",
+    "createdAt": "2026-08-01T10:10:51.321Z"
+  },
+  {
+    "id": "f_1785589062750_vaz1uu",
+    "userAId": "u_1785557679666_57jzi8",
+    "userBId": "u_1785589011865_2uz49u",
+    "status": "accepted",
+    "requestedBy": "u_1785557679666_57jzi8",
+    "createdAt": "2026-08-01T12:57:42.751Z"
+  },
+  {
+    "id": "f_1785589243883_q33msg",
+    "userAId": "u_1785589235060_arj123",
+    "userBId": "u_1785557679666_57jzi8",
+    "status": "accepted",
+    "requestedBy": "u_1785589235060_arj123",
+    "createdAt": "2026-08-01T13:00:43.883Z"
+  },
+  {
+    "id": "f_1785650042045_2gq7w4",
+    "userAId": "u_1785557679666_57jzi8",
+    "userBId": "u_1785650038134_x6c3jw",
+    "status": "accepted",
+    "requestedBy": "u_1785557679666_57jzi8",
+    "createdAt": "2026-08-02T05:54:02.045Z"
+  }
+]

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Волна — чат, звонки, сторис</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ЭКРАН ВХОДА / РЕГИСТРАЦИИ -->
+  <section id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="brand">
+        <span class="brand-wave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </span>
+        <h1>Волна</h1>
+      </div>
+      <p class="login-sub">Сервера, каналы, группы, сторис, звонки и голосовые сообщения.</p>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">Вход</button>
+        <button type="button" class="auth-tab" data-tab="register">Регистрация</button>
+      </div>
+
+      <form id="auth-form">
+        <input id="username-input" type="text" placeholder="Имя пользователя" maxlength="24" autocomplete="username" required />
+        <input id="password-input" type="password" placeholder="Пароль" autocomplete="current-password" required />
+        <div id="auth-error" class="auth-error hidden"></div>
+        <button type="submit" id="auth-submit">Войти</button>
+      </form>
+
+      <!-- Форма ввода кода подтверждения (показывается если привязана почта) -->
+      <form id="code-form" class="hidden">
+        <div class="auth-info" id="code-info"></div>
+        <input id="code-input" class="code-input" type="text" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required />
+        <div id="code-error" class="auth-error hidden"></div>
+        <button type="submit" id="code-submit">Подтвердить</button>
+        <button type="button" id="code-back" class="text-link-btn">← Назад</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ОСНОВНОЙ ЭКРАН -->
+  <section id="app-screen" class="app-screen hidden">
+
+    <!-- Крайняя левая колонка: сервера + группы -->
+    <aside class="server-rail">
+      <div class="server-icon home-icon active" id="home-icon" title="Друзья и сообщения">🏠</div>
+      <div class="rail-divider"></div>
+      <div class="server-icons" id="server-icons"></div>
+      <div class="rail-divider"></div>
+      <div class="group-icons" id="group-icons"></div>
+      <div class="server-icon add-server-icon" id="add-server-icon" title="Создать сервер">+</div>
+      <div class="server-icon add-group-icon" id="add-group-icon" title="Создать группу">👥</div>
+    </aside>
+
+    <!-- Левая колонка: каналы / друзья / сторис -->
+    <aside class="channels-col">
+      <div class="brand-mini">
+        <span class="brand-wave small"><span></span><span></span><span></span><span></span><span></span></span>
+        <span>Волна</span>
+      </div>
+
+      <!-- Сторис (показывается только на вкладке Домой) -->
+      <div class="stories-bar hidden" id="stories-bar"></div>
+
+      <div class="channels-list" id="channels-list"></div>
+      <div class="me-panel">
+        <div class="avatar me-avatar" id="me-avatar"></div>
+        <div class="me-info">
+          <div class="me-name" id="me-name"></div>
+          <div class="me-status" id="me-status"></div>
+        </div>
+        <button id="profile-btn" class="icon-btn" title="Редактировать профиль">⚙️</button>
+        <button id="logout-btn" class="logout-btn" title="Выйти">⏻</button>
+      </div>
+    </aside>
+
+    <!-- Центр: чат -->
+    <main class="chat-col">
+      <header class="chat-header">
+        <div class="chat-title">
+          <span class="hash" id="chat-hash">#</span><span id="current-channel-name">общий</span>
+        </div>
+        <div class="chat-header-actions">
+          <div class="typing-indicator" id="typing-indicator"></div>
+          <button id="dm-call-btn" class="icon-btn hidden" title="Позвонить">📞</button>
+          <button id="dm-video-btn" class="icon-btn hidden" title="Видеозвонок">📹</button>
+          <button id="dm-profile-btn" class="icon-btn hidden" title="Профиль">👤</button>
+        </div>
+      </header>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="friends-panel hidden" id="friends-panel">
+        <form id="add-friend-form" class="add-friend-form">
+          <input id="add-friend-input" type="text" placeholder="Имя пользователя..." maxlength="24" autocomplete="off" />
+          <button type="submit">Добавить</button>
+        </form>
+        <div id="friend-request-error" class="auth-error hidden"></div>
+
+        <div class="friends-section" id="incoming-section">
+          <div class="friends-section-title">Заявки в друзья</div>
+          <div class="friends-list" id="incoming-list"></div>
+        </div>
+
+        <div class="friends-section" id="outgoing-section">
+          <div class="friends-section-title">Исходящие заявки</div>
+          <div class="friends-list" id="outgoing-list"></div>
+        </div>
+
+        <div class="friends-section">
+          <div class="friends-section-title">Мои друзья</div>
+          <div class="friends-list" id="friends-list"></div>
+        </div>
+      </div>
+
+      <form class="message-form" id="message-form" autocomplete="off">
+        <button type="button" id="voice-record-btn" class="voice-record-btn" title="Записать голосовое">🎤</button>
+        <input id="message-input" type="text" placeholder="Написать..." maxlength="2000" />
+        <button type="submit" aria-label="Отправить">➤</button>
+      </form>
+
+      <!-- Индикатор записи голосового -->
+      <div id="recording-indicator" class="recording-indicator hidden">
+        <span class="rec-dot"></span> Запись... <span id="rec-timer">0:00</span>
+        <button type="button" id="cancel-rec-btn" class="text-link-btn">Отмена</button>
+        <button type="button" id="send-rec-btn" class="send-rec-btn">Отправить</button>
+      </div>
+    </main>
+
+    <!-- Правая колонка: участники -->
+    <aside class="users-col">
+      <div class="users-col-title" id="users-col-title">В сети — <span id="online-count">0</span></div>
+      <div class="users-list" id="users-list"></div>
+    </aside>
+
+  </section>
+
+  <!-- МОДАЛКА: создать / вступить в сервер -->
+  <div id="server-modal" class="modal-overlay hidden">
+    <div class="modal-card server-modal-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-servertab="create">Создать сервер</button>
+        <button type="button" class="auth-tab" data-servertab="join">Присоединиться</button>
+      </div>
+
+      <form id="create-server-form" class="modal-form">
+        <div class="avatar-upload" id="server-avatar-upload">
+          <div class="avatar-upload-preview" id="server-avatar-preview">+</div>
+          <input type="file" id="server-avatar-file" accept="image/*" hidden />
+        </div>
+        <input id="create-server-input" type="text" placeholder="Название сервера" maxlength="40" />
+        <button type="submit">Создать</button>
+      </form>
+
+      <form id="join-server-form" class="modal-form hidden">
+        <input id="join-server-input" type="text" placeholder="Код приглашения" maxlength="12" />
+        <button type="submit">Присоединиться</button>
+      </form>
+
+      <div id="server-modal-error" class="auth-error hidden"></div>
+      <button type="button" id="close-server-modal" class="text-link-btn">Отмена</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: создать группу -->
+  <div id="group-modal" class="modal-overlay hidden">
+    <div class="modal-card group-modal-card">
+      <h3 class="modal-title">Создать группу</h3>
+      <form id="create-group-form" class="modal-form vertical">
+        <div class="avatar-upload" id="group-avatar-upload">
+          <div class="avatar-upload-preview" id="group-avatar-preview">+</div>
+          <input type="file" id="group-avatar-file" accept="image/*" hidden />
+        </div>
+        <input id="create-group-input" type="text" placeholder="Название группы" maxlength="40" />
+        <div class="group-members-select">
+          <div class="friends-section-title">Выберите друзей</div>
+          <div class="group-members-list" id="group-members-list"></div>
+        </div>
+        <div id="group-modal-error" class="auth-error hidden"></div>
+        <button type="submit">Создать группу</button>
+      </form>
+      <button type="button" id="close-group-modal" class="text-link-btn">Отмена</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: редактор профиля -->
+  <div id="profile-modal" class="modal-overlay hidden">
+    <div class="modal-card profile-modal-card">
+      <h3 class="modal-title">Редактировать профиль</h3>
+
+      <div class="profile-banner-wrap">
+        <div class="profile-banner" id="edit-banner-preview"></div>
+        <button type="button" class="banner-upload-btn" id="banner-upload-btn" title="Загрузить баннер">📷</button>
+        <input type="file" id="banner-file" accept="image/*" hidden />
+      </div>
+
+      <div class="profile-avatar-wrap">
+        <div class="avatar profile-avatar" id="edit-avatar-preview"></div>
+        <button type="button" class="avatar-upload-btn" id="avatar-upload-btn" title="Загрузить аватар">📷</button>
+        <input type="file" id="avatar-file" accept="image/*" hidden />
+      </div>
+
+      <form id="profile-form" class="modal-form vertical">
+        <label class="form-label">Имя пользователя</label>
+        <input id="edit-username" type="text" maxlength="24" />
+
+        <label class="form-label">Статус</label>
+        <input id="edit-status" type="text" maxlength="100" placeholder="Чем занимаешься?" />
+
+        <label class="form-label">О себе</label>
+        <textarea id="edit-bio" maxlength="500" placeholder="Расскажи о себе..." rows="3"></textarea>
+
+        <div id="profile-error" class="auth-error hidden"></div>
+        <button type="submit">Сохранить</button>
+      </form>
+
+      <!-- Секция привязки почты -->
+      <div class="email-section" style="margin: 0 28px 16px;">
+        <div class="email-section-title">🔒 Безопасность — привязка почты</div>
+        <div class="email-status unverified" id="email-status">Почта не привязана</div>
+        <div id="email-bind-row" class="email-input-row">
+          <input id="email-input" type="email" placeholder="your@email.com" />
+          <button type="button" id="email-bind-btn">Привязать</button>
+        </div>
+        <div id="email-verify-row" class="email-code-row hidden">
+          <input id="email-code-input" type="text" placeholder="Код" maxlength="6" inputmode="numeric" />
+          <button type="button" id="email-verify-btn">Подтвердить</button>
+        </div>
+        <button type="button" id="email-unbind-btn" class="email-unbind-btn hidden">Отвязать почту</button>
+        <div id="email-error" class="auth-error hidden" style="margin-top:8px;"></div>
+      </div>
+
+      <button type="button" id="close-profile-modal" class="text-link-btn">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: просмотр профиля пользователя -->
+  <div id="view-profile-modal" class="modal-overlay hidden">
+    <div class="modal-card profile-modal-card">
+      <div class="profile-banner" id="view-banner"></div>
+      <div class="profile-avatar-wrap">
+        <div class="avatar profile-avatar" id="view-avatar"></div>
+      </div>
+      <h2 class="view-username" id="view-username"></h2>
+      <div class="view-status" id="view-status"></div>
+      <div class="view-online" id="view-online"></div>
+      <div class="view-bio" id="view-bio"></div>
+      <div class="view-meta" id="view-meta"></div>
+      <div class="view-actions" id="view-actions"></div>
+      <button type="button" id="close-view-profile" class="text-link-btn">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- ПРОСМОТР СТОРИС -->
+  <div id="story-viewer" class="story-viewer hidden">
+    <div class="story-progress" id="story-progress"></div>
+    <div class="story-header">
+      <div class="avatar" id="story-avatar"></div>
+      <div class="story-user-info">
+        <div id="story-username"></div>
+        <div id="story-time"></div>
+      </div>
+      <button id="close-story" class="round-btn control">✕</button>
+    </div>
+    <div class="story-content" id="story-content"></div>
+    <button id="story-prev" class="story-nav prev">‹</button>
+    <button id="story-next" class="story-nav next">›</button>
+  </div>
+
+  <!-- ВСПЛЫВАЮЩИЙ ЭКРАН ВХОДЯЩЕГО ЗВОНКА -->
+  <div id="incoming-call" class="modal-overlay hidden">
+    <div class="incoming-card">
+      <div class="pulse-avatar" id="incoming-avatar"></div>
+      <div class="incoming-text">
+        <strong id="incoming-name"></strong>
+        <span id="incoming-type">звонит…</span>
+      </div>
+      <div class="incoming-actions">
+        <button id="reject-btn" class="round-btn danger">✕</button>
+        <button id="accept-btn" class="round-btn accept">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЭКРАН АКТИВНОГО ЗВОНКА -->
+  <div id="call-overlay" class="call-overlay hidden">
+    <div class="call-top">
+      <span id="call-with-name"></span>
+      <span id="call-status">соединение…</span>
+    </div>
+    <div class="video-stage">
+      <video id="remote-video" autoplay playsinline></video>
+      <video id="local-video" autoplay playsinline muted></video>
+    </div>
+    <div class="call-controls">
+      <button id="toggle-mic" class="round-btn control">🎙️</button>
+      <button id="toggle-cam" class="round-btn control">📷</button>
+      <button id="screen-share-btn" class="round-btn control" title="Демонстрация экрана">🖥️</button>
+      <button id="hangup-btn" class="round-btn danger">✕</button>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ ГОЛОСОВОГО КАНАЛА -->
+  <div id="voice-panel" class="voice-panel hidden">
+    <div class="voice-panel-header">
+      <span id="voice-channel-name"></span>
+      <button id="leave-voice-btn" class="round-btn danger small">✕</button>
+    </div>
+    <div class="voice-participants" id="voice-participants"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
